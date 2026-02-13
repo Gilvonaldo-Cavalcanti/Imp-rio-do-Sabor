@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Império do Sabor</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico"> 
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: #f5f2ed;
+            color: #4b2e2e;
+        }
+
+        header {
+            background: #4b2e2e;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            font-size: 14px;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+
+        .container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quantity-control button {
+            background: #4b2e2e;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .quantity-control span {
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            background: #4b2e2e;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: #6d3f3f;
+        }
+
+        .cart {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: 0.4s;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .cart.active {
+            right: 0;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            gap: 5px;
+        }
+
+        .remove-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 3px 6px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .total {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .whatsapp-btn {
+            margin-top: 10px;
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .close-cart {
+            margin-top: 10px;
+            background: #4b2e2e;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .cart-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4b2e2e;
+            color: white;
+            border: none;
+            padding: 15px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .cart-count {
+            background: red;
+            color: white;
+            font-size: 12px;
+            padding: 3px 7px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        footer {
+            background: #4b2e2e;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        @media(max-width:500px) {
+            header h1 {
+                font-size: 24px;
+            }
+
+            .card img {
+                height: 180px;
+            }
+
+            .cart {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Império do Sabor</h1>
+        <p>Doces artesanais feitos por encomenda</p>
+    </header>
+
+    <div class="container">
+
+        <div class="filters">
+            <input type="text" id="searchInput" placeholder="Buscar doce..." onkeyup="filterProducts()">
+
+            <select id="categoryFilter" onchange="filterProducts()">
+                <option value="all">Todas as Categorias</option>
+                <option value="tradicional">Tradicional</option>
+                <option value="gourmet">Gourmet</option>
+                <option value="doce-fino">Doces Finos</option>
+                <option value="palha-italiana">Palha Italiana</option>
+            </select>
+        </div>
+
+        <div class="grid">
+
+            <div class="card" data-category="tradicional">
+                <img src="img/brigadeiro-ninho-nutella.jpg">
+                <div class="card-content">
+                    <h3>Brigadeiro Tradicional</h3>
+                    <p>Leite Ninho com Nutella</p>
+                    <div class="price">R$ 1.50</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Brigadeiro Tradicional - Leite Ninho com Nutella',1.5,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="tradicional">
+                <img src="img/brigadeirodoisamores.png">
+                <div class="card-content">
+                    <h3>Brigadeiro Tradicional</h3>
+                    <p>Casadinho Dois Amores</p>
+                    <div class="price">R$ 1.50</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Brigadeiro Tradicional - Casadinho Dois Amores',1.5,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="tradicional">
+                <img src="img/beijinhodecoco.webp">
+                <div class="card-content">
+                    <h3>Brigadeiro Tradicional</h3>
+                    <p>Beijinho de Coco</p>
+                    <div class="price">R$ 1.50</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Brigadeiro Tradicional - Beijinho de Coco',1.5,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="tradicional">
+                <img src="img/bichodepe.jpeg">
+                <div class="card-content">
+                    <h3>Brigadeiro Tradicional</h3>
+                    <p>Bicho de Pé</p>
+                    <div class="price">R$ 1.50</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Brigadeiro Tradicional - Bicho de Pé',1.5,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+
+            <div class="card" data-category="gourmet">
+                <img src="img/pistache-com-avela.jpg">
+                <div class="card-content">
+                    <h3>Sofisticado Gourmet</h3>
+                    <p>Pistache</p>
+                    <div class="price">R$ 2.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Sofisticado Gourmet - Pistache',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="gourmet">
+                <img src="img/creme-brulee.jpeg">
+                <div class="card-content">
+                    <h3>Sofisticado Gourmet</h3>
+                    <p>Creme Brúlée</p>
+                    <div class="price">R$ 2.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Sofisticado Gourmet - Creme Brúlée',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="gourmet">
+                <img src="img/Brigadeiro-de-Ferrero-Rocher-gourmet.png">
+                <div class="card-content">
+                    <h3>Sofisticado Gourmet</h3>
+                    <p>Ferrero Rocher</p>
+                    <div class="price">R$ 2.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Sofisticado Gourmet - Ferrero Rocher',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="gourmet">
+                <img src="img/kinder.jpeg">
+                <div class="card-content">
+                    <h3>Sofisticado Gourmet</h3>
+                    <p>Kinder</p>
+                    <div class="price">R$ 2.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Sofisticado Gourmet - Pistache',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="doce-fino">
+                <img src="img/rafaello.jpg">
+                <div class="card-content">
+                    <h3>Doce Fino</h3>
+                    <p>Rafaello</p>
+                    <div class="price">R$ 3.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Sofisticado Gourmet - Pistache',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="doce-fino">
+                <img src="img/Copinho-Maracuja.jpg">
+                <div class="card-content">
+                    <h3>Doce Fino</h3>
+                    <p>Maracujá</p>
+                    <div class="price">R$ 3.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Sofisticado Gourmet - Pistache',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="doce-fino">
+                <img src="img/geleiamorango.jpg">
+                <div class="card-content">
+                    <h3>Doce Fino</h3>
+                    <p>Geléia de Morango</p>
+                    <div class="price">R$ 3.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Sofisticado Gourmet - Pistache',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="doce-fino">
+                <img src="img/cereja.jpg">
+                <div class="card-content">
+                    <h3>Doce Fino</h3>
+                    <p>Cereja</p>
+                    <div class="price">R$ 3.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Doce Fino - Cereja',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="doce-fino">
+                <img src="img/ninhonutella.jpeg">
+                <div class="card-content">
+                    <h3>Doce Fino</h3>
+                    <p>Ninho com Nutella</p>
+                    <div class="price">R$ 3.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Doce Fino - Ninho com Nutella',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+
+             <div class="card" data-category="palha-italiana">
+                <img src="img/palhatradicional.png">
+                <div class="card-content">
+                    <h3>Palha Italiana</h3>
+                    <p>Brigadeiro clássico de chocolate com biscoito maisena.</p>
+                    <div class="price">R$ 3.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Palha Italiana - Brigadeiro clássico de chocolate com biscoito maisena.',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+
+            <div class="card" data-category="palha-italiana">
+                <img src="img/palhaleite.jpg">
+                <div class="card-content">
+                    <h3>Palha Italiana</h3>
+                    <p>Leite Ninho: Brigadeiro branco com leite em pó.</p>
+                    <div class="price">R$ 3.00</div>
+                    <div class="quantity-control">
+                        <button onclick="changeQty(this,-1)">-</button>
+                        <span>1</span>
+                        <button onclick="changeQty(this,1)">+</button>
+                    </div>
+                    <button class="btn" onclick="addToCart('Palha Italiana - Leite Ninho: Brigadeiro branco com leite em pó.',2,this)">Adicionar ao
+                        Carrinho</button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="cart" id="cart">
+        <h2>Seu Carrinho</h2>
+        <div id="cartItems"></div>
+        <div class="total" id="cartTotal">Total: R$ 0,00</div>
+        <button class="whatsapp-btn" onclick="sendWhatsApp()">Finalizar Pedido no WhatsApp</button>
+        <button class="close-cart" onclick="toggleCart()">Fechar</button>
+    </div>
+
+    <button class="cart-btn" onclick="toggleCart()">
+        🛒 Carrinho <span class="cart-count" id="cartCount">0</span>
+    </button>
+
+    <footer>
+        <p><strong>Império do Sabor</strong></p>
+        <p>Doces sob encomenda | Atendimento via WhatsApp</p>
+    </footer>
+
+    <script>
+        let cart = [];
+
+        function filterProducts() {
+            let search = document.getElementById("searchInput").value.toLowerCase();
+            let category = document.getElementById("categoryFilter").value;
+            let cards = document.querySelectorAll(".card");
+
+            cards.forEach(card => {
+                let title = card.querySelector("h3").textContent.toLowerCase();
+                let description = card.querySelector("p").textContent.toLowerCase();
+                let cardCategory = card.getAttribute("data-category");
+
+                let matchesSearch = title.includes(search) || description.includes(search);
+                let matchesCategory = category === "all" || cardCategory === category;
+
+                card.style.display = (matchesSearch && matchesCategory) ? "flex" : "none";
+            });
+        }
+
+        function changeQty(btn, change) {
+            let span = btn.parentElement.querySelector("span");
+            let qty = parseInt(span.textContent);
+            qty += change;
+            if (qty < 1) qty = 1;
+            span.textContent = qty;
+        }
+
+        function addToCart(name, price, button) {
+            let qty = parseInt(button.parentElement.querySelector("span").textContent);
+            let existing = cart.find(item => item.name === name);
+            if (existing) { existing.qty += qty; }
+            else { cart.push({ name, price, qty }); }
+            updateCart();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function updateCart() {
+            let cartItems = document.getElementById("cartItems");
+            let total = 0;
+            let totalItems = 0;
+            cartItems.innerHTML = "";
+
+            cart.forEach((item, index) => {
+                total += item.price * item.qty;
+                totalItems += item.qty;
+                cartItems.innerHTML += `
+<div class="cart-item">
+<span>${item.name} (${item.qty})</span>
+<span>R$ ${(item.price * item.qty).toFixed(2)}</span>
+<button class="remove-btn" onclick="removeItem(${index})">X</button>
+</div>
+`;
+            });
+
+            document.getElementById("cartTotal").textContent = "Total: R$ " + total.toFixed(2);
+            document.getElementById("cartCount").textContent = totalItems;
+        }
+
+        function toggleCart() {
+            document.getElementById("cart").classList.toggle("active");
+        }
+
+        function sendWhatsApp() {
+            if (cart.length === 0) { alert("Seu carrinho está vazio!"); return; }
+
+            let message = "Olá! Gostaria de fazer o seguinte pedido:%0A%0A";
+            let total = 0;
+
+            cart.forEach(item => {
+                message += `• ${item.name} (${item.qty}) - R$ ${(item.price * item.qty).toFixed(2)}%0A`;
+                total += item.price * item.qty;
+            });
+
+            message += `%0ATotal: R$ ${total.toFixed(2)}`;
+            window.open(`https://wa.me/5583998023549?text=${message}`, "_blank");
+        }
+    </script>
+
+</body>
+
+</html>
